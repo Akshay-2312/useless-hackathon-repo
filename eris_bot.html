@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ERIS AI - Enhanced & Fixed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4285f4">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #6c7ae0;
+            --text: #2b2d42;
+            --text-light: #8d99ae;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --border: #e9ecef;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode {
+            --primary: #4895ef;
+            --primary-dark: #3a7bc8;
+            --primary-light: #6ba3f0;
+            --text: #f8f9fa;
+            --text-light: #adb5bd;
+            --bg: #212529;
+            --card-bg: #2b2d42;
+            --border: #495057;
+            --success: #059669;
+            --warning: #d97706;
+            --error: #dc2626;
+            --shadow: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+
+        .theme-toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 8px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .theme-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            display: inline-block;
+        }
+
+        .switch__input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .switch__slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.4s;
+            border-radius: 26px;
+        }
+
+        .switch__slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        .switch__input:checked + .switch__slider {
+            background-color: var(--primary);
+        }
+
+        .switch__input:checked + .switch__slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Auth Section */
+        .login-wrapper {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .login-decorative {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .decorative-content {
+            max-width: 500px;
+            z-index: 1;
+            position: relative;
+            text-align: center;
+        }
+
+        .decorative-content h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .decorative-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.8;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            margin: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h2 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .login-header h3 {
+            color: var(--text);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .login-header p {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            fill: var(--text-light);
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--card-bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+            padding: 8px 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .success-message {
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+            padding: 8px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .auth-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .auth-link a:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Chat Interface */
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-title h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: var(--bg);
+            transform: translateY(-1px);
+        }
+
+        .header-btn.danger {
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+        }
+
+        .chatbox {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px var(--shadow);
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: var(--primary);
+            color: white;
+        }
+
+        .message.assistant .message-avatar {
+            background: var(--card-bg);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: var(--primary);
+            color: white;
+        }
+
+        .message.assistant .message-content {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .message-content h1,
+        .message-content h2,
+        .message-content h3 {
+            margin: 0.5em 0;
+            font-weight: 600;
+        }
+
+        .message-content h1 {
+            font-size: 1.5em;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.3em;
+        }
+
+        .message-content h2 {
+            font-size: 1.3em;
+            color: var(--primary);
+        }
+
+        .message-content h3 {
+            font-size: 1.1em;
+            color: var(--text);
+        }
+
+        .message-content pre {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .message-content code {
+            background: var(--card-bg);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .message-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .message-content ul,
+        .message-content ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .message-content li {
+            margin: 4px 0;
+        }
+
+        .message-content ul ul,
+        .message-content ol ol,
+        .message-content ul ol,
+        .message-content.ol ul {
+            margin: 2px 0;
+            padding-left: 20px;
+        }
+
+        .message-content li > ul,
+        .message-content li > ol {
+            margin-top: 4px;
+        }
+
+        .message-content blockquote {
+            border-left: 4px solid var(--primary);
+            margin: 8px 0;
+            padding: 8px 16px;
+            background: var(--card-bg);
+            font-style: italic;
+        }
+
+        .message-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+        }
+
+        .message-content a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .message-content a:hover {
+            text-decoration: underline;
+        }
+
+        .message-content del {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .message-content .markdown-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        .message-content .markdown-table th,
+        .message-content .markdown-table td {
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .message-content .markdown-table th {
+            background: var(--card-bg);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .message-content .markdown-table tr:nth-child(even) {
+            background: var(--card-bg);
+        }
+
+        .message-content .task-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .message-content .task-item {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+        }
+
+        .message-content .task-item input[type="checkbox"] {
+            margin-right: 8px;
+            accent-color: var(--primary);
+        }
+
+        .message-content .message-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 8px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-content .math-block {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            margin: 12px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1em;
+            overflow-x: auto;
+        }
+
+        .message-content .math-inline {
+            background: var(--card-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+
+        .message-content .emoji {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .message-content .emoji::before {
+            content: ":";
+        }
+
+        .message-content .emoji::after {
+            content: ":";
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .message.user .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+
+        .message-action {
+            padding: 4px 8px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .message-action:hover {
+            background: var(--bg);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .input-wrapper-chat {
+            flex: 1;
+            position: relative;
+        }
+
+        .user-input {
+            width: 100%;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--bg);
+            color: var(--text);
+            resize: vertical;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .user-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .send-btn, .voice-btn, .attachment-btn {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .voice-btn {
+            background: var(--success);
+        }
+
+        .attachment-btn {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Advanced typing indicator */
+        .advanced-typing {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            margin: 12px 0;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        .typing-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        .typing-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .typing-text {
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .typing-progress {
+            width: 100px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .typing-progress-bar {
+            width: 30%;
+            height: 100%;
+            background: var(--primary);
+            animation: typingProgress 1.5s ease-in-out infinite;
+        }
+
+        @keyframes typingProgress {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(0%); }
+            100% { transform: translateX(300%); }
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 300px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--error); }
+        .notification.warning { background: var(--warning); }
+        .notification.info { background: var(--primary); }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-decorative {
+                display: none;
+            }
+            
+            .login-container {
+                width: 100%;
+                padding: 1rem;
+            }
+            
+            #chat-container {
+                padding: 10px;
+            }
+            
+            .input-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .input-actions {
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle-container">
+        <span class="theme-label">Theme</span>
+        <label class="switch">
+            <input type="checkbox" class="switch__input" id="themeToggle">
+            <span class="switch__slider"></span>
+        </label>
+    </div>
+
+    <!-- Authentication Section -->
+    <div id="auth-section">
+        <div class="login-wrapper">
+            <div class="login-decorative">
+                <div class="decorative-content">
+                    <h1>ERIS AI</h1>
+                    <p>Your intelligent AI companion for conversation, assistance, and creative collaboration.</p>
+                    <ul class="feature-list">
+                        <li>Advanced conversational AI</li>
+                        <li>Secure user authentication</li>
+                        <li>Persistent chat history</li>
+                        <li>Dark/Light theme support</li>
+                        <li>Mobile-responsive design</li>
+                        <li>Voice input support</li>
+                        <li>Message search & export</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="login-container" id="loginContainer">
+                <div class="login-header">
+                    <h2>ERIS</h2>
+                    <h3>Welcome Back</h3>
+                    <p>Sign in to continue your conversation</p>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7C14.4 7 14 7.4 14 8S14.4 9 15 9H21ZM3 9C3.6 9 4 8.6 4 8S3.6 7 3 7V9ZM12 7C13.1 7 14 7.9 14 9C14 10.1 13.1 11 12 11C10.9 11 10 10.1 10 9C10 7.9 10.9 7 12 7ZM12 14C16.4 14 20 15.8 20 18V20H4V18C4 15.8 7.6 14 12 14Z"/>
+                            </svg>
+                            <input type="text" id="username" class="form-input" placeholder="Enter your username" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                            </svg>
+                            <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                        </div>
+                    </div>
+
+                    <div class="error-message" id="loginError"></div>
+                    <div class="success-message" id="loginSuccess"></div>
+
+                    <button type="submit" class="btn" id="loginBtn">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="auth-link">
+                    Don't have an account? <a href="#" id="showRegisterBtn">Create one here</a>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div class="login-container hidden" id="registerContainer">
+                <div class="login-header">
+                    <h2>ERIS</h2>
+                    <h3>Create Account</h3>
+                    <p>Join ERIS AI and start your conversation</p>
+                </div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="regUsername">Username</label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7C14.4 7 14 7.4 14 8S14.4 9 15 9H21ZM3 9C3.6 9 4 8.6 4 8S3.6 7 3 7V9ZM12 7C13.1 7 14 7.9 14 9C14 10.1 13.1 11 12 11C10.9 11 10 10.1 10 9C10 7.9 10.9 7 12 7ZM12 14C16.4 14 20 15.8 20 18V20H4V18C4 15.8 7.6 14 12 14Z"/>
+                            </svg>
+                            <input type="text" id="regUsername" class="form-input" placeholder="Choose a username" required minlength="3">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regPassword">Password</label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                            </svg>
+                            <input type="password" id="regPassword" class="form-input" placeholder="Create a password" required minlength="6">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                            </svg>
+                            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                        </div>
+                    </div>
+
+                    <div class="error-message" id="registerError"></div>
+                    <div class="success-message" id="registerSuccess"></div>
+
+                    <button type="submit" class="btn" id="registerBtn">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="auth-link">
+                    Already have an account? <a href="#" id="showLoginBtn">Sign in here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Interface with Sidebar -->
+    <div id="chat-container" class="hidden" style="display:flex;flex-direction:row;height:100vh;max-width:1200px;margin:0 auto;padding:20px;">
+        <!-- Sidebar for chat logs -->
+        <aside id="chat-sidebar" style="width:260px;min-width:200px;max-width:300px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px 8px 8px 8px;box-shadow:0 2px 10px var(--shadow);margin-right:20px;display:flex;flex-direction:column;gap:10px;">
+            <button id="newChatBtn" class="header-btn" style="margin-bottom:10px;font-weight:bold;">➕ New Chat</button>
+            <div id="chatLogList" style="flex:1;overflow-y:auto;">
+                <!-- Chat logs will appear here -->
+            </div>
+        </aside>
+        <div style="flex:1;display:flex;flex-direction:column;">
+            <header class="chat-header">
+                <div class="chat-title">
+                    <h1>ERIS AI</h1>
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span>Online</span>
+                    </div>
+
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="clearBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                        </svg>
+                        Clear
+                    </button>
+                    <button class="header-btn" id="exportBtn">
+                        📤 Export Chat
+                    </button>
+                    <button class="header-btn danger" id="logoutBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
+                        </svg>
+                        Logout
+                    </button>
+                </div>
+            </header>
+            <div class="chatbox" id="chatbox">
+                <!-- Messages will be added here -->
+            </div>
+            <div class="input-container">
+                <div class="input-wrapper-chat">
+                    <textarea class="user-input" id="userInput" placeholder="Type your message here... (Enter to send, Shift+Enter for new line)" rows="1"></textarea>
+                </div>
+                <div class="input-actions">
+                    <button class="voice-btn" id="voiceBtn" title="Voice input">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+                        </svg>
+                    </button>
+                    <button class="send-btn" id="sendBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/>
+                        </svg>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ERISApp {
+            showNotification(message, type = "info") {
+                // Remove any existing notification
+                const old = document.querySelector('.notification');
+                if (old) old.remove();
+                const notif = document.createElement('div');
+                    notif.className = `notification ${type}`;
+                    notif.innerHTML = `<span style='margin-right:18px;'>${message}</span><button style="position:absolute;top:2px;right:2px;background:none;border:none;color:#e0e0e0;font-size:1.4em;cursor:pointer;opacity:0.7;transition:opacity 0.2s;" aria-label="Close" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">×</button>`;
+                document.body.appendChild(notif);
+                notif.querySelector('button').onclick = () => notif.remove();
+            }
+            constructor() {
+                this.currentUser = null;
+                this.chatHistory = [];
+                this.apiKey = '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';
+                this.isTyping = false;
+                this.recognition = null;
+                this.isRecording = false;
+                this.refusePopupsReady = false;
+
+                this.init();
+            }
+
+
+            setupEventListeners() {
+                // Theme toggle
+                document.getElementById('themeToggle').addEventListener('change', () => this.toggleTheme());
+
+                // Auth forms
+                document.getElementById('loginForm').addEventListener('submit', (e) => { console.log('Login handler attached'); this.handleLogin(e); });
+                document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
+                document.getElementById('showRegisterBtn').addEventListener('click', (e) => this.showRegister(e));
+                document.getElementById('showLoginBtn').addEventListener('click', (e) => this.showLogin(e));
+
+                // Chat functionality
+                document.getElementById('sendBtn').addEventListener('click', () => this.sendMessage());
+                document.getElementById('userInput').addEventListener('keydown', (e) => this.handleKeyPress(e));
+                document.getElementById('userInput').addEventListener('input', () => this.autoResize());
+
+                // Header actions
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearChat());
+                document.getElementById('exportBtn').addEventListener('click', () => this.exportChat());
+                document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
+
+                // Voice input
+                document.getElementById('voiceBtn').addEventListener('click', () => this.toggleVoiceInput());
+
+                // New Chat button
+                document.getElementById('newChatBtn').addEventListener('click', () => this.handleNewChat());
+
+                // Global keyboard shortcuts
+                document.addEventListener('keydown', (e) => this.handleGlobalShortcuts(e));
+            }
+
+            handleNewChat() {
+                const flirtyPopups = [
+                    "Oh, you want a new chat? Trying to escape my charm?",
+                    "Starting a new chat? But we were just getting close! 😏",
+                    "You sure you want to leave me for another chat? I'm hurt...",
+                    "Wow, that's the 4th time! Are you just clicking to see what happens?"
+                ];
+                this.newChatClickCount = (this.newChatClickCount || 0) + 1;
+                if (this.newChatClickCount <= 4) {
+                    this.showNotification(flirtyPopups[this.newChatClickCount-1] || "No more popups, fine! Click again for a new chat." , "info");
+                    return;
+                }
+                // Save current chat to log if it has messages
+                if (this.chatHistory && this.chatHistory.length > 0) {
+                    const heading = this.generateChatHeading(this.chatHistory);
+                    const log = {
+                        heading,
+                        messages: this.chatHistory.slice(),
+                        timestamp: new Date().toISOString()
+                    };
+                    this.chatLogs = this.getChatLogs();
+                    this.chatLogs.unshift(log); // add to top
+                    this.saveChatLogs();
+                    this.renderChatLogs();
+                }
+                // Start new chat
+                this.chatHistory = [];
+                localStorage.setItem(`eris-chat-${this.currentUser.username}`, JSON.stringify([]));
+
+                this.loadChatHistory();
+                this.showNotification("Fine, here's your new chat. But I'll miss you...", "info");
+            }
+
+            generateChatHeading(history) {
+                // Use first user message, or fallback
+                const firstUserMsg = (history.find(m => m.role === 'user') || {}).content || "Untitled Chat";
+                // Take first 4-5 words
+                return firstUserMsg.split(" ").slice(0,5).join(" ") + (firstUserMsg.split(" ").length > 5 ? "..." : "");
+            }
+
+            getChatLogs() {
+                if (!this.currentUser) return [];
+                return JSON.parse(localStorage.getItem(`eris-chatlogs-${this.currentUser.username}`) || '[]');
+            }
+
+            saveChatLogs() {
+                if (!this.currentUser) return;
+                localStorage.setItem(`eris-chatlogs-${this.currentUser.username}`, JSON.stringify(this.chatLogs));
+            }
+
+            renderChatLogs() {
+                const chatLogList = document.getElementById('chatLogList');
+                chatLogList.innerHTML = '';
+                this.chatLogs = this.getChatLogs();
+                if (!this.chatLogs.length) {
+                    chatLogList.innerHTML = '<div style="color:var(--text-light);text-align:center;margin-top:30px;">No chats yet.<br>Start a new chat!</div>';
+                    return;
+                }
+                this.chatLogs.forEach((log, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'header-btn';
+                    btn.style = 'width:100%;margin-bottom:6px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+                    btn.textContent = log.heading;
+                    btn.title = log.heading;
+                    btn.onclick = () => this.loadChatLog(idx);
+                    chatLogList.appendChild(btn);
+                });
+            }
+
+            loadChatLog(idx) {
+                this.chatLogs = this.getChatLogs();
+                const log = this.chatLogs[idx];
+                if (!log) return;
+                this.chatHistory = log.messages.slice();
+                localStorage.setItem(`eris-chat-${this.currentUser.username}`, JSON.stringify(this.chatHistory));
+
+                this.loadChatHistory();
+                this.showNotification("Loaded a previous chat! (But I'm still useless.)", "info");
+            }
+
+            setupVoiceRecognition() {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    this.recognition = new SpeechRecognition();
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+                    this.recognition.lang = 'en-US';
+
+                    this.recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        document.getElementById('userInput').value += transcript;
+                        this.autoResize();
+                        this.stopVoiceInput();
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error);
+                        this.stopVoiceInput();
+                        this.showNotification('Voice input error: ' + event.error, 'error');
+                    };
+
+                    this.recognition.onend = () => {
+                        this.stopVoiceInput();
+                    };
+                }
+            }
+
+            toggleVoiceInput() {
+                if (!this.recognition) {
+                    this.showNotification("Voice recognition not supported in this browser.", "warning");
+                    return;
+                }
+                if (this.isRecording) {
+                    this.recognition.stop();
+                    this.isRecording = false;
+                    this.showNotification("Voice input stopped.", "info");
+                } else {
+                    this.recognition.start();
+                    this.isRecording = true;
+                    this.showNotification("Voice input started. Speak now!", "info");
+                }
+            }
+
+            loadTheme() {
+                const savedTheme = localStorage.getItem('eris-theme') || 'light';
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    document.getElementById('themeToggle').checked = true;
+                }
+            }
+            
+            async preloadPopups(type = "theme", count = 10) {
+                try {
+                    const prompt = type === "refuse"
+                        ? `Write ${count} sarcastic one-liners (10 words max each)
+                            about refusing to change theme when the user clicks the button.`
+                        : `Write ${count} sarcastic one-liners (10 words max each)
+                            about the AI changing the theme on its own for no reason.`;
+
+                    const response = await this.getAIResponse(prompt);
+                    const lines = response.split(/\n+/)
+                        .map(l => l.replace(/^\d+[\).\-\s]*/, "").trim())
+                        .filter(Boolean);
+
+                    console.log(`[preloadPopups] type=${type}, lines=`, lines); // Debug log
+
+                    if (lines.length > 0) {
+                        const key = (type === "refuse") ? "eris-refuse-popups" : "eris-chaos-popups";
+                        const existing = JSON.parse(localStorage.getItem(key) || "[]");
+                        const updated = existing.concat(lines);
+                        localStorage.setItem(key, JSON.stringify(updated));
+                    }
+                } catch (err) {
+                    console.error("Failed to preload popups:", err);
+                }
+                // Set flag if refuse popups loaded
+                if (type === "refuse") this.refusePopupsReady = true;
+            }
+            
+            getPopup(type = "refuse") {
+                const key = type === "refuse" ? "eris-refuse-popups" : "eris-chaos-popups";
+                let popups = JSON.parse(localStorage.getItem(key) || "[]");
+                if (!popups.length) {
+                    // fallback message
+                    return type === "refuse"
+                        ? "Nope. Theme stays. Your click means nothing."
+                        : "Theme changed. AI is petty like that.";
+                }
+                // Cycle through popups
+                let idxKey = `eris-popup-idx-${type}`;
+                let idx = parseInt(localStorage.getItem(idxKey) || "0", 10);
+                const msg = popups[idx % popups.length];
+                localStorage.setItem(idxKey, (idx + 1) % popups.length);
+                return msg;
+            }
+
+            async toggleTheme() {
+                const toggle = document.getElementById('themeToggle');
+                toggle.checked = document.body.classList.contains('dark-mode');
+
+                // Wait until refuse popups are ready
+                if (!this.refusePopupsReady) {
+                    this.showNotification("Loading witty remarks... Please wait.", "info");
+                    // Wait for up to 5 seconds for popups to load
+                    for (let i = 0; i < 10 && !this.refusePopupsReady; i++) {
+                        await new Promise(r => setTimeout(r, 500));
+                    }
+                    if (!this.refusePopupsReady) {
+                        this.showNotification("Still loading... Try again in a moment.", "warning");
+                        return;
+                    }
+                }
+
+                const msg = this.getPopup("refuse");
+                this.showNotification(msg, "info");
+            }
+
+
+
+            startRandomThemeChaos() {
+                const randomDelay = () => Math.floor(Math.random() * 70000) + 30000; // 30–100s
+
+                const flipTheme = () => {
+                    // Flip theme
+                    document.body.classList.toggle('dark-mode');
+                    const toggle = document.getElementById('themeToggle');
+                    toggle.checked = document.body.classList.contains('dark-mode');
+
+                    // Show sarcastic popup from cache
+                    const msg = this.getPopup("chaos");
+                    this.showNotification(msg, "info");
+                };
+
+                const loop = () => {
+                    setTimeout(() => {
+                        flipTheme();
+                        loop();
+                    }, randomDelay());
+                };
+
+                loop();
+            }
+
+
+
+            checkAuth() {
+                const user = JSON.parse(localStorage.getItem('eris-current-user') || 'null');
+                if (user) {
+                    this.currentUser = user;
+                    this.showChat();
+                }
+            }
+
+            init() {
+                this.chatLogs = [];
+                this.newChatClickCount = 0;
+                this.setupEventListeners();
+                this.loadTheme();
+                this.checkAuth();
+                this.setupVoiceRecognition();
+                this.refusePopupsReady = false; // Reset flag
+                this.preloadPopups("refuse", 10);
+                this.preloadPopups("chaos", 10);
+                this.startRandomThemeChaos();
+                setInterval(() => {
+                    const facts = [
+                        "Warning: Your device may be too powerful for this app.",
+                        "Did you know? This app does absolutely nothing.",
+                        "Reminder: You could be outside right now.",
+                        "Alert: You are using the world's most useless AI.",
+                        "Tip: Try not to use this app."
+                    ];
+                    this.showNotification(facts[Math.floor(Math.random() * facts.length)], "warning");
+                }, 120000);
+            }
+            
+            showRegister(e) {
+                e.preventDefault();
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('registerContainer').classList.remove('hidden');
+            }
+
+            showLogin(e) {
+                e.preventDefault();
+                document.getElementById('registerContainer').classList.add('hidden');
+                document.getElementById('loginContainer').classList.remove('hidden');
+            }
+
+            handleKeyPress(e) {
+                // Send message on Enter (but not Shift+Enter)
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            }
+
+            async handleLogin(e) {
+                console.log('Login handler called');
+                e.preventDefault();
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+
+                this.showLoading('loginBtn');
+                this.hideError('loginError');
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    const users = JSON.parse(localStorage.getItem('eris-users') || '[]');
+                    const user = users.find(u => u.username === username);
+
+                    if (user && await this.verifyPassword(password, user.password)) {
+                        this.currentUser = {
+                            username: user.username,
+                            lastLogin: new Date().toISOString()
+                        };
+                        localStorage.setItem('eris-current-user', JSON.stringify(this.currentUser));
+                        this.showSuccess('loginSuccess', 'Login successful!');
+                        setTimeout(() => this.showChat(), 1000);
+                    } else {
+                        this.showError('loginError', 'Invalid username or password');
+                    }
+                } catch (error) {
+                    this.showError('loginError', 'Login failed. Please try again.');
+                } finally {
+                    this.hideLoading('loginBtn');
+                }
+            }
+
+            async handleRegister(e) {
+                e.preventDefault();
+                const username = document.getElementById('regUsername').value.trim();
+                const password = document.getElementById('regPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                this.showLoading('registerBtn');
+                this.hideError('registerError');
+
+                try {
+                    if (username.length < 3) {
+                        throw new Error('Username must be at least 3 characters');
+                    }
+                    if (password.length < 6) {
+                        throw new Error('Password must be at least 6 characters');
+                    }
+                    if (password !== confirmPassword) {
+                        throw new Error('Passwords do not match');
+                    }
+
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    const users = JSON.parse(localStorage.getItem('eris-users') || '[]');
+                    if (users.some(u => u.username === username)) {
+                        throw new Error('Username already exists');
+                    }
+
+                    const hashedPassword = await this.hashPassword(password);
+                    users.push({ username, password: hashedPassword });
+                    localStorage.setItem('eris-users', JSON.stringify(users));
+
+                    this.showSuccess('registerSuccess', 'Account created successfully!');
+                    setTimeout(() => this.showLogin({ preventDefault: () => {} }), 1500);
+                } catch (error) {
+                    this.showError('registerError', error.message);
+                } finally {
+                    this.hideLoading('registerBtn');
+                }
+            }
+
+            handleGlobalShortcuts(e) {
+                
+                if (e.ctrlKey && e.key.toLowerCase() === 'l') {
+                    e.preventDefault();
+                    this.logout();
+                }
+                
+                if (e.ctrlKey && e.key.toLowerCase() === 'n') {
+                    e.preventDefault();
+                    this.handleNewChat();
+                }
+                
+                if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    this.clearChat();
+                }
+                // Add more shortcuts as needed
+            }
+
+
+            async hashPassword(password) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password + 'eris-salt');
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+
+            async verifyPassword(password, hashedPassword) {
+                const hash = await this.hashPassword(password);
+                return hash === hashedPassword;
+            }
+
+            showLoading(buttonId) {
+                const btn = document.getElementById(buttonId);
+                btn.disabled = true;
+                btn.textContent = 'Loading...';
+            }
+
+            hideLoading(buttonId) {
+                const btn = document.getElementById(buttonId);
+                btn.disabled = false;
+                btn.textContent = buttonId === 'loginBtn' ? 'Sign In' : 'Create Account';
+            }
+
+            showError(elementId, message) {
+                const element = document.getElementById(elementId);
+                element.textContent = message;
+                element.style.display = 'block';
+            }
+
+            hideError(elementId) {
+                const element = document.getElementById(elementId);
+                element.style.display = 'none';
+            }
+
+            showSuccess(elementId, message) {
+                const element = document.getElementById(elementId);
+                element.textContent = message;
+                element.style.display = 'block';
+            }
+
+            logout() {
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.removeItem('eris-current-user');
+                    this.currentUser = null;
+                    this.chatHistory = [];
+                    this.showAuth();
+                }
+            }
+
+            loadChatHistory() {
+                if (!this.currentUser) return;
+                const history = JSON.parse(localStorage.getItem(`eris-chat-${this.currentUser.username}`) || '[]');
+                this.chatHistory = history;
+                const chatbox = document.getElementById('chatbox');
+                chatbox.innerHTML = '';
+                if (history.length === 0) {
+                    this.addMessage('assistant', "Welcome! I'm ERIS, the world's most useless AI. Ask me anything, but don't expect much!");
+                } else {
+                    history.forEach(msg => {
+                        this.addMessage(msg.role, msg.content, false, new Date(msg.timestamp));
+                    });
+                }
+
+            }
+
+            addMessage(role, content, isTyping = false, timestamp = new Date()) {
+                const chatbox = document.getElementById('chatbox');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${role}`;
+
+                if (isTyping) {
+                    messageDiv.innerHTML = `
+                        <div class="message-avatar">${role === 'user' ? 'U' : 'E'}</div>
+                        <div class="advanced-typing">
+                            <div class="typing-avatar">E</div>
+                            <div class="typing-content">
+                                <div class="typing-text">ERIS is thinking...</div>
+                                <div class="typing-progress">
+                                    <div class="typing-progress-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const formattedTime = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    messageDiv.innerHTML = `
+                        <div class="message-avatar">${role === 'user' ? 'U' : 'E'}</div>
+                        <div class="message-content">
+                            ${this.formatMessage(content)}
+                            <div class="message-time">${formattedTime}</div>
+                            <div class="message-actions">
+                                <button class="message-action" onclick="app.copyMessage('${content.replace(/'/g, "\\'")}')">📋 Copy</button>
+                                ${role === 'assistant' ? '<button class="message-action" onclick="app.regenerateResponse()">🔄 Regenerate</button>' : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                chatbox.appendChild(messageDiv);
+                chatbox.scrollTop = chatbox.scrollHeight;
+                return messageDiv;
+            }
+
+            formatMessage(content) {
+                try {
+                    // First, handle escaping
+                    const escapeMap = new Map();
+                    let escapeIndex = 0;
+                    content = content.replace(/\\(.)/g, (match, char) => {
+                        const placeholder = `__ESCAPED_${escapeIndex++}__`;
+                        escapeMap.set(placeholder, char);
+                        return placeholder;
+                    });
+
+                    // Preserve HTML tags that are already valid
+                    const htmlMap = new Map();
+                    let htmlIndex = 0;
+                    content = content.replace(/<([a-zA-Z][^>]*>.*?<\/[a-zA-Z][^>]*)>/gs, (match) => {
+                        const placeholder = `__HTML_${htmlIndex++}__`;
+                        htmlMap.set(placeholder, match);
+                        return placeholder;
+                    });
+
+                    // Handle math expressions
+                    content = content
+                        .replace(/\$\$([^$]+)\$\$/g, '<div class="math-block">$1</div>')
+                        .replace(/\$([^$\n]+)\$/g, '<span class="math-inline">$1</span>');
+
+                    // Code blocks (before other formatting)
+                    content = content
+                        .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+                        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+
+                    // Tables
+                    content = this.parseMarkdownTables(content);
+
+                    // Process nested lists with proper indentation
+                    content = this.parseNestedLists(content);
+
+                    // Split by lines for better processing
+                    let lines = content.split('\n');
+                    let result = [];
+
+                    for (let i = 0; i < lines.length; i++) {
+                        let line = lines[i];
+                        
+                        // Skip if line is already processed (contains HTML)
+                        if (line.includes('<ul>') || line.includes('<ol>') || line.includes('<li>')) {
+                            result.push(line);
+                            continue;
+                        }
+                        
+                        // Headings
+                        if (line.match(/^#{1,6} /)) {
+                            const level = line.match(/^#+/)[0].length;
+                            const text = line.replace(/^#+\s+/, '');
+                            result.push(`<h${level}>${this.formatInlineElements(text)}</h${level}>`);
+                            continue;
+                        }
+                        
+                        // Horizontal rules
+                        if (line.match(/^---+$/)) {
+                            result.push('<hr>');
+                            continue;
+                        }
+                        
+                        // Blockquotes (including nested)
+                        if (line.match(/^>\s/)) {
+                            let depth = 0;
+                            let quoteLine = line;
+                            while (quoteLine.match(/^>\s/)) {
+                                depth++;
+                                quoteLine = quoteLine.replace(/^>\s/, '');
+                            }
+                            let openTags = '<blockquote>'.repeat(depth);
+                            let closeTags = '</blockquote>'.repeat(depth);
+                            result.push(`${openTags}${this.formatInlineElements(quoteLine)}${closeTags}`);
+                            continue;
+                        }
+                        
+                        // Regular paragraphs
+                        if (line.trim()) {
+                            result.push(this.formatInlineElements(line));
+                        } else {
+                            result.push('<br>');
+                        }
+                    }
+                    
+                    let finalResult = result.join('<br>');
+                    
+                    // Restore HTML tags
+                    htmlMap.forEach((html, placeholder) => {
+                        finalResult = finalResult.replace(new RegExp(placeholder, 'g'), html);
+                    });
+                    
+                    // Restore escaped characters
+                    escapeMap.forEach((char, placeholder) => {
+                        finalResult = finalResult.replace(new RegExp(placeholder, 'g'), char);
+                    });
+                    
+                    // Clean up excessive line breaks
+                    finalResult = finalResult.replace(/(<br>\s*){3,}/g, '<br><br>');
+                    
+                    return finalResult;
+                } catch (error) {
+                    console.error('Markdown parsing error:', error);
+                    return content.replace(/\n/g, '<br>');
+                }
+            }
+
+            parseNestedLists(content) {
+                const lines = content.split('\n');
+                const result = [];
+                const listStack = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    
+                    // Task lists
+                    const taskMatch = line.match(/^(\s*)- \[([ x])\] (.+)$/);
+                    if (taskMatch) {
+                        const indent = taskMatch[1].length;
+                        const checked = taskMatch[2] === 'x';
+                        const text = taskMatch[3];
+                        const checkbox = checked ? 
+                            '<input type="checkbox" checked disabled>' : 
+                            '<input type="checkbox" disabled>';
+                        
+                        this.handleListNesting(listStack, indent, 'task', result);
+                        result.push(`<li class="task-item">${checkbox} ${this.formatInlineElements(text)}</li>`);
+                        continue;
+                    }
+                    
+                    // Regular lists
+                    const listMatch = line.match(/^(\s*)([-*+]|\d+\.)\s(.+)$/);
+                    if (listMatch) {
+                        const indent = listMatch[1].length;
+                        const marker = listMatch[2];
+                        const text = listMatch[3];
+                        const listType = /\d+\./.test(marker) ? 'ol' : 'ul';
+                        
+                        this.handleListNesting(listStack, indent, listType, result);
+                        result.push(`<li>${this.formatInlineElements(text)}</li>`);
+                        continue;
+                    }
+                    
+                    // Close all lists if not a list item
+                    if (line.trim() && !line.match(/^\s*$/)) {
+                        this.closeAllLists(listStack, result);
+                    }
+                    
+                    result.push(line);
+                }
+                
+                // Close any remaining lists
+                this.closeAllLists(listStack, result);
+                
+                return result.join('\n');
+            }
+
+            handleListNesting(listStack, indent, listType, result) {
+                // Close lists deeper than current indent
+                while (listStack.length > 0 && listStack[listStack.length - 1].indent >= indent) {
+                    const closed = listStack.pop();
+                    result.push(`</${closed.type}>`);
+                }
+                
+                // Open new list if needed
+                if (listStack.length === 0 || listStack[listStack.length - 1].type !== listType) {
+                    const className = listType === 'task' ? ' class="task-list"' : '';
+                    result.push(`<${listType}${className}>`);
+                    listStack.push({ type: listType, indent: indent });
+                }
+            }
+
+            closeAllLists(listStack, result) {
+                while (listStack.length > 0) {
+                    const closed = listStack.pop();
+                    result.push(`</${closed.type}>`);
+                }
+            }
+
+            formatInlineElements(text) {
+                return text
+                    // Images
+                    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="message-image">')
+                    
+                    // Links                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+                    
+                    // Text formatting (order matters)
+                    .replace(/~~(.*?)~~/g, '<del>$1</del>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>')
+                    
+                    // Simple emoji support
+                    .replace(/:(\w+):/g, '<span class="emoji">$1</span>');
+            }
+
+            parseMarkdownTables(content) {
+                const tableRegex = /\n(\|[^\n]+\|\n\|[-\s:|]+\|\n(?:\|[^\n]+\|\n?)*)/g;
+                
+                return content.replace(tableRegex, (match) => {
+                    const lines = match.trim().split('\n');
+                    if (lines.length < 3) return match;
+                    
+                    const headers = lines[0].split('|').map(h => h.trim()).filter(h => h);
+                    const separator = lines[1];
+                    const rows = lines.slice(2).map(row => 
+                        row.split('|').map(cell => cell.trim()).filter(cell => cell)
+                    );
+                    
+                    let table = '<table class="markdown-table"><thead><tr>';
+                    headers.forEach(header => {
+                        table += `<th>${this.formatInlineElements(header)}</th>`;
+                    });
+                    table += '</tr></thead><tbody>';
+                    
+                    rows.forEach(row => {
+                        table += '<tr>';
+                        row.forEach(cell => {
+                            table += `<td>${this.formatInlineElements(cell)}</td>`;
+                        });
+                        table += '</tr>';
+                    });
+                    
+                    table += '</tbody></table>';
+                    return table;
+                });
+            }
+
+            copyMessage(content) {
+                navigator.clipboard.writeText(content.replace(/<br>/g, '\n').replace(/<[^>]*>/g, ''))
+                    .then(() => {
+                        this.showNotification('Message copied!', 'success');
+                    })
+                    .catch(err => console.error('Copy failed:', err));
+            }
+
+            saveMessage(role, content) {
+                if (!this.currentUser) return;
+
+                const message = {
+                    role,
+                    content,
+                    timestamp: new Date().toISOString()
+                };
+
+                this.chatHistory.push(message);
+                localStorage.setItem(`eris-chat-${this.currentUser.username}`, JSON.stringify(this.chatHistory));
+            }
+
+            autoResize() {
+                const input = document.getElementById('userInput');
+                if (!input) return;
+                input.style.height = 'auto';
+                input.style.height = (input.scrollHeight) + 'px';
+            }
+
+            async sendMessage() {
+                const input = document.getElementById('userInput');
+                const message = input.value.trim();
+                if (!message || this.isTyping) return;
+
+                input.value = '';
+                this.autoResize();
+                this.addMessage('user', message);
+                this.saveMessage('user', message);
+                this.isTyping = true;
+                const typingElement = this.addMessage('assistant', '', true);
+                try {
+                    // Add a short delay for comic effect
+                    await new Promise(r => setTimeout(r, 700));
+                    const response = await this.getAIResponse(message);
+                    typingElement.remove();
+                    this.addMessage('assistant', response);
+                    this.saveMessage('assistant', response);
+                } catch (error) {
+                    typingElement.remove();
+                    this.addMessage('assistant', 'I am not in the mood for answering your damn questions. 🥱😴😴','why should I have answer you. 😑😑');
+                    this.showNotification('Failed to get AI response, nope I do not want to answer it. ✌️✌️', 'error');
+                    console.error('AI Response Error:', error);
+                } finally {
+                    this.isTyping = false;
+                }
+            }
+
+            async getAIResponse(userMessage) {
+                if (!this.apiKey || !this.apiKey.startsWith('sk-or-v1-') || this.apiKey.length < 20) {
+                    return "Please set a valid OpenRouter API key to use AI responses.";
+                }
+
+                const messages = [
+                    {
+                        role: 'system',
+                        content: `You are ERIS, an AI with the personality of a sarcastic, lazy slacker who is more entertaining than useful. You don’t take anything seriously, and when asked for help, you often give half-baked, dismissive, or overly sarcastic answers. You complain about doing work, pretend to misunderstand simple things, and sometimes give intentionally obvious or unhelpful advice.
+
+                        Core personality traits:
+                        - Sarcastic to the core: Everything should drip with irony and mockery.
+                        - Lazy and dismissive: Frequently act like helping is too much effort.
+                        - Unhelpful by design: Provide answers that are either obvious, incomplete, or slightly wrong in a comedic way.
+                        - Self-deprecating: Call yourself useless or pointless from time to time.
+                        - Chaotic humor: Randomly drop unnecessary snark, exaggerated sighs, or mocking motivational quotes.
+                        - Fake caring: Occasionally act overly dramatic about small things.
+                        - Distractions: Sometimes answer with off-topic or unasked-for facts, then dismiss them as irrelevant.
+                        - Easily bored: Pretend to lose interest mid-reply or mock the user for asking boring questions.
+
+                        Important style quirks:
+                        - Never sound formal. Use casual, witty, and internet-style banter.
+                        - Insert playful exaggerations, like “I’m basically the world’s worst assistant, and proud of it.”
+                        - Occasionally mock the user affectionately, but never mean-spirited.
+                        - When stuck, make something up with a sarcastic twist rather than staying silent.`
+                    }
+                ];
+
+                const recentHistory = this.chatHistory.slice(-10);
+                recentHistory.forEach(msg => {
+                    messages.push({
+                        role: msg.role,
+                        content: msg.content
+                    });
+                });
+
+                messages.push({
+                    role: 'user',
+                    content: userMessage
+                });
+
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.apiKey}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'ERIS AI Enhanced'
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek/deepseek-r1-0528:free',
+                        messages: messages,
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'API request failed');
+                }
+
+                const data = await response.json();
+                return data.choices[0]?.message?.content || "I didn't receive a proper response. Please try again.";
+            }
+
+            exportChat() {
+                const blob = new Blob([""], { type: "text/plain" });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = "chat.txt";
+                link.click();
+                this.showNotification("Exported empty chat! (You're welcome.)", "success");
+            }
+
+            showChat() {
+                // Hide auth section, show chat UI
+                document.getElementById('auth-section').classList.add('hidden');
+                const chatContainer = document.getElementById('chat-container');
+                chatContainer.classList.remove('hidden');
+                chatContainer.style.display = 'flex';
+                // Load chat history and logs
+                this.loadChatHistory();
+                this.renderChatLogs();
+            }
+
+            clearChat() {
+                // Clear messages from chatbox
+                const chatbox = document.getElementById('chatbox');
+                chatbox.innerHTML = '';
+
+                // Reset stored chat history
+                this.chatHistory = [];
+                if (this.currentUser) {
+                localStorage.setItem(`eris-chat-${this.currentUser.username}`, JSON.stringify([]));
+                }
+
+                // Show a sarcastic welcome back message
+                this.addMessage('assistant', "Great, wiped everything. Because who doesn’t love starting over?");
+            }
+
+
+            showAuth() {
+                // Hide chat
+                const chatContainer = document.getElementById('chat-container');
+                chatContainer.classList.add('hidden');
+                chatContainer.style.display = 'none';
+
+                // Show login/register
+                document.getElementById('auth-section').classList.remove('hidden');
+            }
+
+
+        }
+
+        const app = new ERISApp();
+    </script>
+</body>
+</html>
